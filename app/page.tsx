@@ -1,69 +1,135 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { chatClaude } from "@/lib/chat-claude";
+import { useState } from "react";
+import { useChat } from "@/store/chat-context";
+
+const Home = () => {
+  const [formInput, setformInput] = useState("");
+  const { messages, setMessages } = useChat();
+  const [isLoading, setIsLoading] = useState(false);
+
+  /* an array of messages with context. eg
+  [
+    {
+      role: "user",
+      content: "content"
+    },
+    {
+      role: "assistant",
+      content: "content"
+    }
+  ]
+  */
+
+  const submitPrompt = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const newMessage = {
+      role: "user",
+      content: formInput
+    }
+
+    setMessages(newMessage)
+    const updatedMessages = [...messages, newMessage];
+    setIsLoading(true);
+
+    try {
+      const reply = await chatClaude(updatedMessages);
+
+      if (reply) {
+        setMessages({ role: "assistant", content: reply });
+        setformInput("");
+      }
+
+      console.log(reply)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="aura-app">
+      <div className="aura-glow aura-glow-top" />
+      <div className="aura-glow aura-glow-bottom" />
+
+      <header className="aura-header">
+        <button className="icon-button" type="button" aria-label="Open menu">
+          <span />
+          <span />
+          <span />
+        </button>
+        <div className="aura-brand">
+          <span>Aura</span>
+          <small>1.3</small>
+          <em>BETA</em>
+          <span className="chevron">v</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="aura-actions">
+          <button className="icon-button aura-action" type="button" aria-label="Voice chat">o</button>
+          <button className="icon-button aura-action" type="button" aria-label="New chat">+</button>
+          <button className="icon-button aura-action" type="button" aria-label="More options">...</button>
         </div>
+      </header>
+
+      <main className="aura-main">
+        <section className="aura-hero">
+          <div className="aura-orb" aria-hidden="true">
+            <div className="aura-orb-core" />
+          </div>
+          <p className="aura-kicker">YOUR PERSONAL EMAIL AGENT</p>
+          <h1>Hello Amal</h1>
+          <p className="aura-subtitle">What would you like to get done today?</p>
+        </section>
+
+        {/* message list */}
+        <div className="aura-messages">
+          {messages.map((msg, i) => (
+            <div
+              key={i}
+              className={"aura-message-row " + (msg.role === "user" ? "aura-message-row-user" : "aura-message-row-assistant")}
+            >
+              <div
+                className={"aura-message " + (msg.role === "user" ? "aura-message-user" : "aura-message-assistant")}
+              >
+                {msg.role !== "user" && <span className="message-orb" aria-hidden="true" />}
+                {msg.content}
+              </div>
+            </div>
+          ))}
+
+          {isLoading && (
+            <div className="aura-message-row aura-message-row-assistant">
+              <div className="aura-message aura-message-assistant aura-loader" aria-label="Aura is thinking">
+                <span className="aura-loader-dots" aria-hidden="true">
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                  <span className="dot"></span>
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <form
+          onSubmit={submitPrompt}
+          className="aura-composer"
+        >
+          <button className="composer-add" type="button" aria-label="Add attachment">+</button>
+          <input
+            type="text"
+            className="aura-input"
+            placeholder="Ask Aura anything..."
+            value={formInput}
+            onChange={(e) => setformInput(e.target.value)}
+          />
+          <button className="composer-send" type="submit" aria-label="Send message">&gt;</button>
+        </form>
       </main>
     </div>
   );
 }
+
+export default Home

@@ -62,7 +62,7 @@ const Home = () => {
           <span />
         </button>
         <div className="aura-brand">
-          <span>Aura</span>
+          <span>Willow</span>
           <small>1.3</small>
           <em>BETA</em>
           <span className="chevron">v</span>
@@ -121,7 +121,7 @@ const Home = () => {
           <input
             type="text"
             className="aura-input"
-            placeholder="Ask Aura anything..."
+            placeholder="Ask Willow anything..."
             value={formInput}
             onChange={(e) => setformInput(e.target.value)}
           />

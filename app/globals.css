@@ -16,11 +16,6 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  min-height: 100%;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
@@ -39,22 +34,25 @@ button {
 }
 
 .aura-app {
+  position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
-  overflow-x: hidden;
+  width: 100vw;
+  /* min-height: 100vh; */
+  overflow-x: clip;
+  
   /* background:
     radial-gradient(circle at 50% 40%, rgba(93, 78, 210, 0.28), transparent 32%),
     linear-gradient(145deg, #100b2d 0%, #21135a 48%, #3a267f 100%); */
 }
 
 .aura-app::before {
+  content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background: linear-gradient(120deg, rgba(118, 101, 255, 0.11), transparent 34%, rgba(5, 3, 25, 0.28));
-  content: "";
   pointer-events: none;
 }
 
@@ -77,7 +75,7 @@ button {
 
 .aura-glow-bottom {
   right: -8rem;
-  bottom: -13rem;
+  bottom: -1rem;
   background: #7658e8;
 }
 
@@ -86,6 +84,7 @@ button {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: min(100%, 980px);
+  min-width: 0;
   margin: 0 auto;
   padding: 2rem clamp(1rem, 4vw, 2.5rem) 1rem;
 }
@@ -158,6 +157,7 @@ button {
   flex: 1;
   flex-direction: column;
   width: min(100%, 720px);
+  min-width: 0;
   min-height: 0;
   margin: 0 auto;
   padding: 0 clamp(1rem, 4vw, 2.5rem) 1.6rem;
@@ -220,6 +220,7 @@ button {
   gap: 0.85rem;
   min-height: 3rem;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.5rem 0.1rem 1rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
@@ -245,6 +246,7 @@ button {
   color: rgba(255, 255, 255, 0.88);
   font-size: 0.88rem;
   line-height: 1.5;
+  overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
@@ -294,8 +296,13 @@ button {
   animation: dot-flow 1.35s ease-in-out infinite;
 }
 
-.dot:nth-child(2) { animation-delay: 0.15s; }
-.dot:nth-child(3) { animation-delay: 0.3s; }
+.dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 .aura-composer {
   display: flex;
@@ -351,11 +358,15 @@ button {
 }
 
 @keyframes dot-flow {
-  0%, 60%, 100% {
+
+  0%,
+  60%,
+  100% {
     transform: translateY(0) scale(0.78);
     opacity: 0.42;
     box-shadow: 0 0 0 rgba(154, 132, 255, 0);
   }
+
   30% {
     transform: translateY(-0.34rem) scale(1);
     opacity: 1;
@@ -364,30 +375,79 @@ button {
 }
 
 @keyframes orb-float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-0.35rem) scale(1.02); }
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-0.35rem) scale(1.02);
+  }
 }
 
-@media (max-width: 520px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .aura-header {
-    padding-top: 1.15rem;
+    padding: 1.5rem clamp(1.25rem, 4vw, 2rem) 1rem;
   }
 
   .aura-main {
-    padding-bottom: 0.8rem;
+    padding-inline: clamp(1.25rem, 4vw, 2rem);
   }
 
   .aura-hero {
-    padding-top: 1.2rem;
+    padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .aura-header {
+    padding: 1rem 0.75rem 0.5rem;
   }
 
-  .aura-message {
-    max-width: 90%;
+  .aura-main {
+    padding: 0 0.75rem 0.8rem;
+  }
+
+  .aura-hero {
+    padding: clamp(1rem, 4vh, 1.5rem) 0 0.75rem;
+  }
+
+  .aura-orb {
+    width: clamp(6rem, 28vw, 8rem);
+    height: clamp(6rem, 28vw, 8rem);
+    margin-bottom: 1.15rem;
+  }
+
+  .aura-kicker {
+    font-size: 0.52rem;
+    letter-spacing: 0.16em;
+  }
+
+  .aura-subtitle {
     font-size: 0.82rem;
   }
 
+  .aura-messages {
+    gap: 0.65rem;
+    padding: 0.35rem 0 0.75rem;
+  }
+
+  .aura-message {
+    max-width: 94%;
+    padding: 0.7rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .aura-message-assistant {
+    padding-left: 2.2rem;
+  }
+
   .aura-composer {
+    gap: 0.4rem;
     min-height: 3.35rem;
+    padding: 0.35rem;
+    border-radius: 1rem;
   }
 
   .composer-add,
@@ -395,9 +455,14 @@ button {
     width: 2.35rem;
     height: 2.35rem;
   }
+
+  .aura-input {
+    font-size: 0.82rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .aura-orb,
   .dot {
     animation: none;
